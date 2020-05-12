@@ -5,6 +5,7 @@
 #include "flutter/shell/platform/linux/public/flutter_linux/fl_view.h"
 
 #include "flutter/shell/platform/linux/fl_engine_private.h"
+#include "flutter/shell/platform/linux/fl_platform_plugin.h"
 #include "flutter/shell/platform/linux/fl_renderer_x11.h"
 #include "flutter/shell/platform/linux/public/flutter_linux/fl_engine.h"
 
@@ -26,6 +27,9 @@ struct _FlView {
 
   // Pointer button state recorded for sending status updates
   int64_t button_state;
+
+  // Flutter system channel handlers
+  FlPlatformPlugin* platform_plugin;
 };
 
 enum { PROP_FLUTTER_PROJECT = 1, PROP_LAST };
@@ -81,6 +85,10 @@ static void fl_view_constructed(GObject* object) {
 
   self->renderer = fl_renderer_x11_new();
   self->engine = fl_engine_new(self->project, FL_RENDERER(self->renderer));
+
+  // Create system channel handlers
+  FlBinaryMessenger* messenger = fl_engine_get_binary_messenger(self->engine);
+  self->platform_plugin = fl_platform_plugin_new(messenger);
 }
 
 static void fl_view_set_property(GObject* object,
@@ -122,6 +130,7 @@ static void fl_view_dispose(GObject* object) {
   g_clear_object(&self->project);
   g_clear_object(&self->renderer);
   g_clear_object(&self->engine);
+  g_clear_object(&self->platform_plugin);
 
   G_OBJECT_CLASS(fl_view_parent_class)->dispose(object);
 }
