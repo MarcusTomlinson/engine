@@ -23,6 +23,12 @@ G_DECLARE_FINAL_TYPE(FlBasicMessageChannel,
                      BASIC_MESSAGE_CHANNEL,
                      GObject)
 
+G_DECLARE_FINAL_TYPE(FlBasicMessageChannelResponseHandle,
+                     fl_basic_message_channel_response_handle,
+                     FL,
+                     BASIC_MESSAGE_CHANNEL_RESPONSE_HANDLE,
+                     GObject)
+
 /**
  * FlBasicMessageChannel:
  *
@@ -79,19 +85,21 @@ G_DECLARE_FINAL_TYPE(FlBasicMessageChannel,
 /**
  * FlBasicMessageChannelResponseHandle:
  *
- * A handle used to respond to messages.
+ * #FlBasicMessageChannelResponseHandle is an object used to send responses
+ * with.
  */
-typedef struct _FlBasicMessageChannelResponseHandle
-    FlBasicMessageChannelResponseHandle;
 
 /**
  * FlBasicMessageChannelMessageHandler:
  * @channel: an #FlBasicMessageChannel.
  * @message: message received.
- * @response_handle: (transfer full): a handle to respond to the message with.
+ * @response_handle: a handle to respond to the message with.
  * @user_data: (closure): data provided when registering this handler.
  *
- * Function called when a message is received.
+ * Function called when a message is received. Call
+ * fl_basic_message_channel_respond() to respond to this message. If the
+ * response is not occurring in this callback take a reference to
+ * @response_handle and release that once it has been responded to.
  */
 typedef void (*FlBasicMessageChannelMessageHandler)(
     FlBasicMessageChannel* channel,
@@ -132,7 +140,7 @@ void fl_basic_message_channel_set_message_handler(
 /**
  * fl_basic_message_channel_respond:
  * @channel: an #FlBasicMessageChannel.
- * @response_handle: (transfer full): handle that was provided in a
+ * @response_handle: handle that was provided in a
  * #FlBasicMessageChannelMessageHandler.
  * @message: (allow-none): message response to send or %NULL for an empty
  * response.
