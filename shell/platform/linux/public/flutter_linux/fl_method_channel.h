@@ -105,7 +105,7 @@ G_DECLARE_FINAL_TYPE(FlMethodChannel,
  * Function called when a method call is received. Respond to the method call
  * with fl_method_call_respond(). If the response is not occurring in this
  * callback take a reference to @method_call and release that once it has been
- * responded to.Failing to respond before the last reference to @method_call is
+ * responded to. Failing to respond before the last reference to @method_call is
  * dropped is a programming error.
  */
 typedef void (*FlMethodChannelMethodCallHandler)(FlMethodChannel* channel,

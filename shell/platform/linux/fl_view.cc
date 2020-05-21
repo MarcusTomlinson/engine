@@ -6,6 +6,7 @@
 
 #include "flutter/shell/platform/linux/fl_engine_private.h"
 #include "flutter/shell/platform/linux/fl_key_event_plugin.h"
+#include "flutter/shell/platform/linux/fl_platform_plugin.h"
 #include "flutter/shell/platform/linux/fl_renderer_x11.h"
 #include "flutter/shell/platform/linux/public/flutter_linux/fl_engine.h"
 
@@ -30,6 +31,9 @@ struct _FlView {
 
   // Flutter system channel handlers.
   FlKeyEventPlugin* key_event_plugin;
+
+  // Flutter system channel handlers
+  FlPlatformPlugin* platform_plugin;
 };
 
 enum { PROP_FLUTTER_PROJECT = 1, PROP_LAST };
@@ -89,6 +93,7 @@ static void fl_view_constructed(GObject* object) {
   // Create system channel handlers
   FlBinaryMessenger* messenger = fl_engine_get_binary_messenger(self->engine);
   self->key_event_plugin = fl_key_event_plugin_new(messenger);
+  self->platform_plugin = fl_platform_plugin_new(messenger);
 }
 
 static void fl_view_set_property(GObject* object,
@@ -131,6 +136,7 @@ static void fl_view_dispose(GObject* object) {
   g_clear_object(&self->renderer);
   g_clear_object(&self->engine);
   g_clear_object(&self->key_event_plugin);
+  g_clear_object(&self->platform_plugin);
 
   G_OBJECT_CLASS(fl_view_parent_class)->dispose(object);
 }
